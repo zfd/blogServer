@@ -76,21 +76,14 @@ theme: indigo
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
-deploy:
-  type: git
-  repo: git@github.com:zfd/zfd.github.io.git
-  branch: master
-
-# server backup
-#backup:
+#deploy:
 #  type: git
-#  theme: indigo
-#  repo:
-#    github: git@github.com:zfd/blogServer.git
+#  repo: git@github.com:zfd/zfd.github.io.git
+#  branch: master
 
-backup:
-  type: git
-  theme: indigo
-  repo:
-    github: https://github.com:zfd/blogServer.git,master
-
+deploy:
+  - type: git
+    repo:
+      github: git@github.com:zfd/zfd.github.io.git,master
+    extend_dirs:
+      - source
