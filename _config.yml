@@ -80,3 +80,11 @@ deploy:
   type: git
   repo: git@github.com:zfd/zfd.github.io.git
   branch: master
+
+# server backup
+backup:
+  type: git
+  theme: indigo
+  repo:
+    github: git@github.com:zfd/blogServer.git,master
+
