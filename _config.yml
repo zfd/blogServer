@@ -85,5 +85,6 @@ deploy:
 backup:
   type: git
   theme: indigo
-  repo: git@github.com:zfd/blogServer.git
+  repo:
+    github: git@github.com:zfd/blogServer.git
 
