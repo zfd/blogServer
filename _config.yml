@@ -82,9 +82,14 @@ deploy:
   branch: master
 
 # server backup
+#backup:
+#  type: git
+#  theme: indigo
+#  repo:
+#    github: git@github.com:zfd/blogServer.git
+
 backup:
   type: git
-  theme: indigo
-  repo:
-    git: git@github.com:zfd/blogServer.git
+  repository:
+    github: git@github.com:zfd/blogServer.git,master
 
