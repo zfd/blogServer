@@ -92,5 +92,5 @@ backup:
   type: git
   theme: indigo
   repo:
-    github: git@github.com:zfd/blogServer.git,master
+    github: https://github.com:zfd/blogServer.git,master
 
