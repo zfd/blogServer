@@ -91,5 +91,5 @@ deploy:
 backup:
   type: git
   repository:
-    github: git@github.com:zfd/blogServer.git,master
+    github: github.com/zfd/blogServer.git,master
 
