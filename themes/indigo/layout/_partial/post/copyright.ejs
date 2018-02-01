@@ -1,12 +1,12 @@
+<% if(theme.postMessage || theme.show_last_updated) { %>
 <blockquote class="post-copyright">
-    <% if(theme.postMessage || theme.show_last_updated) { %>
     <div class="content">
         <%- partial('updated') %>
         <% if(theme.postMessage) {%>
         <%- _.template(theme.postMessage)(locals) %>
         <% } %>
     </div>
-    <% } %>
+    <!--todo move-->
     <footer>
         <a href="<%- config.url %>">
             <img src="<%- url_for(theme.avatar) %>" alt="<%- config.author %>">
@@ -14,3 +14,4 @@
         </a>
     </footer>
 </blockquote>
+<% } %>
