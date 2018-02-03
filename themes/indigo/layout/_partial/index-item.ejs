@@ -19,7 +19,7 @@
     <% } %>
 
         <a href="<%- url_for(post.path) %>" class="post-more waves-effect waves-button">
-            <%= __('post.continue_reading') %>
+            <%= theme.excerpt_link %>
         </a>
     </div>
     <% if(post.tags && post.tags.length){ %>
