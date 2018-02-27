@@ -2,7 +2,7 @@
 title: nginx、CGI、fastCGI、php-cgi、php-fpm
 date: 2018-02-07 17:12:45
 categories: 服务端
-tags: [ngxin, CGI, fastCGI, php-fpm]
+tags: [nginx, CGI, fastCGI, php-fpm]
 ---
 
 ## 名词解释
