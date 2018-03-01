@@ -2,7 +2,7 @@
 title: PHP核心技术与最佳实践
 date: 2018-03-01 10:02:32
 categories: 笔记
-tags: [php, note]
+tags: [php, book note]
 ---
 
 ## 面向对象的的核心概念

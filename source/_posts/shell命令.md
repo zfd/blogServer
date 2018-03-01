@@ -6,7 +6,7 @@ tags: [linux, shell]
 ---
 
 ```
-#!bin/sh                                                                                                                           
+#!bin/sh
 #md5当前目录所有xxx.sql=>xxx.sql.md5
 
 for file in *
