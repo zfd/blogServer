@@ -111,6 +111,16 @@ error_reporting(E_ALL&~E_NOTICE)不显示通知级别的错误。“~”表示�
 
 ## PHP网络技术及应用
 
+### Web 基础
+HTTP（HyperText Transfer Protocol，超文本传输协议）。
+WWW（World Wide Web）的三种技术：HTML、HTTP、URL。
+RFC（Request for Comments，征求修正意见书），互联网的设计文档。
+
+URI（Uniform Resource Indentifier，统一资源标识符）
+URL（Uniform Resource Locator，统一资源定位符）
+URN（Uniform Resource Name，统一资源名称），例如 urn:isbn:0-486-27557-4
+URI 包含 URL 和 URN，目前 WEB 只有 URL 比较流行，所以见到的基本都是 URL。
+
 ### HTTP请求
 
 + 请求行：请求方法+URL+协议/版本+CRLF（Carriage-Return Line-Feed，即回车+换行，\r\n） 
