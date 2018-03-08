@@ -28,13 +28,13 @@ menu:
 #    url: /custom
 
 # 你的头像url
-avatar: /img/icon.png
+avatar: /img/dog.png
 # avatar link
 avatar_link: /
 # 头像背景图
 brand: /img/brand.jpg
 # favicon
-favicon: /img/icon_trans.png
+favicon: /img/dog_trans.png
 
 # email
 email: zf.dong@qq.com

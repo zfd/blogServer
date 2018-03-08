@@ -111,6 +111,13 @@ error_reporting(E_ALL&~E_NOTICE)不显示通知级别的错误。“~”表示�
 
 ## PHP网络技术及应用
 
+### HTTP请求
+
++ 请求行：请求方法+URL+协议/版本+CRLF（Carriage-Return Line-Feed，即回车+换行，\r\n） 
++ 消息报头
++ 请求正文
+
+
 ## PHP模板引擎的原理和实践
 
 ## Memcached使用与实践
