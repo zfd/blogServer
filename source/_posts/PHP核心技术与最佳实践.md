@@ -146,9 +146,104 @@ URI 包含 URL 和 URN，目前 WEB 只有 URL 比较流行，所以见到的基
 
 ## PHP模板引擎的原理和实践
 
+### smarty（直接看smarty就可以了）
+
+> smarty是基于PHP开发的PHP模板引擎，他提供了php逻辑与html页面的分离
+
+工作流程：
+
++ 把需要显示的变量，赋值，塞到对象的内部属性中的一个数组里 
++ 然后编译模板，将标签解析成相应的php echo代码 
++ 引入编译后的php文件
+
+使用步骤：
+
++ Smarty是一个类，要使用的话，必须引入在进行实例化 
++ 使用assign给模板赋值 
++ 使用display方法（从编译到输出）
+
+优点：
+
++ 速度快：相对于其他模板引擎
++ 编译型：把模板文件替换成一个HTML+PHP混合的PHP文件，当下模板没有改变，将自动转向编译文件
++ 缓存技术：一定缓存时间内，用户最终看到的html文件缓存成一个静态的html页
++ 插件技术：可以自定义插件
+
+缺点：
+
++ 编译模板，浪费时间 
++ 要把变量再重新赋值到对象的属性中，增大了开销
++ 不适用用实时更新，股票、天气等
++ 不适用于小项目，小项目直接开发更快
+
+Smarty.class.php：
+
+```
+<?php
+ 
+class Smarty  //此类就是libs中的Smarty.class.php类
+{
+    public $leftlimit="<{";  //左分隔符
+    public $rightlimit="}>";//右分隔符
+    public $attr;  //存放变量信息的数组
+     
+     
+    //注册变量
+    function assign($k,$v)
+    {
+        $this->attr[$k] = $v;  //向数组中添加一个值,相当于$sttr[0]="sdc123"
+    }
+     
+    //显示模板
+    function display($name)
+    {
+        //1.造模板路径
+        $filename = $mubanlujing.$name;
+         
+        //2.获取模板内容,内容是一大串代码,(例如模板为index.html)
+        $str=file_get_contents($filename);
+         
+        /*$str里面的代吗内容
+        <html>
+        <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        </head>
+        <body>
+        <div>{$aa}</div>
+        </body>
+        </html>
+        */
+         
+        //3.用正则去匹配字符串中出现的{}里面的内容
+         
+        //4.将内容读取（读取到的是数组里面的key），拿key去数组attr里面取value值
+         
+            /*$str里面的代码内容
+            <html>
+            <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+            </head>
+            <body>
+            <div><?php echo $attr[key]?></div>
+            </body>
+            </html>
+            */
+         
+        //5.将str里面的内容保存在缓存文件里面
+        file_put_contents($filename,$str);//$filename是新的文件
+         
+        //6.将存储的文件加载到当前页面
+        include(filename);
+    }
+     
+}
+```
+
 ## Memcached使用与实践
 
+
 ## redis使用与实践
+
 
 ## hash算法及数据库实现
 
