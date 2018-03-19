@@ -262,7 +262,7 @@ class Smarty  //此类就是libs中的Smarty.class.php类
 理论上，web的每一层都可以被缓存。
 
 + CPU缓存；
-+ 应用层：Memcached这样的Key Value内存缓存；
++ 内存：Memcached这样的Key Value内存缓存；
 + 数据库：Query cache，Table cache，Thread cache；
 + 应用程序代码级别：Smarty文件缓存；
 + 浏览器：浏览器缓存；
@@ -299,9 +299,26 @@ class Smarty  //此类就是libs中的Smarty.class.php类
 
 ## Memcached使用与实践
 
+> 本质上是一个key/value的内存数据库，但是不支持数据的持久化，服务器关闭之后数据全部丢失。
+
+### 为什么要用memcached？
+
++ 对数据库的高并发读写；（关系型数据库承受不了高并发的读写，如：每秒上万次）
++ 对海量数据的处理；（数据量上亿左右，表的读写效率低）
 
 ## redis使用与实践
 
+> 本质上是一个key/value的内存数据库。
+
+### 数据结构
+
+string，list，set，sort set，hash等；
+
+### redis优势
+
++ Redis不仅仅支持简单的k/v类型的数据，同时还提供list，set，zset，hash等数据结构的存储。
++ Redis支持数据的备份，即master-slave模式的数据备份。
++ Redis支持数据的持久化，可以将内存中的数据保持在磁盘中，重启的时候可以再次加载进行使用。
 
 ## hash算法及数据库实现
 
