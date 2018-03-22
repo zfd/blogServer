@@ -312,7 +312,175 @@ class Smarty  //此类就是libs中的Smarty.class.php类
 
 ### 数据结构
 
-string，list，set，sort set，hash等；
+| 结构类型 | 结构存储的值 | 结构的读写能力 |
+|---|---|---|
+| string | 字符串、整形、浮点数 | 对字符串整个或部分操作，对整形、浮点数自增或自减 |
+| list | 链表，每个节点都包含一个字符串 | 两端push、pop；根据偏移量修剪；读取单个或多个元素；根据值查找或移除元素 |
+| set | 无序集合，包含string，并且每个字符串都是唯一 | CRUD元素；与集合计算交集、并集、差集；从集合随机获取元素 |
+| hash | 散列表，包含键值对，key/value 都是字符串类型 | CRUD键值对；获取所有键值对 |
+| zset | 有序集合，字符串成语与浮点数分值之间的有序映射，元素排序顺序由分值大小决定 | CRUD元素；根据分值范围或成员获取元素 |
+
+#### 简单动态字符串（SDS）
+
+``` C
+/* 
+ * 保存字符串对象的结构 
+ */  
+struct sdshdr {      
+    // buf 中已占用空间的长度  
+    int len;  
+    // buf 中剩余可用空间的长度  
+    int free;  
+    // 数据空间  
+    char buf[];  
+};  
+```
+
+优点：
+
++ 常数复杂度获取字符串的长度：len属性保存了字符串的长度；（'\0'空字符不计入len）
++ 杜绝缓冲区溢出：当对SDS进行修改时，先检查SDS的空间是否满足修改所需要的空间要求，如果不满足，则先扩展空间，然后执行修改操作；
++ 减少修改字符串带来的内存重分配次数：
+    + 空间预分配：当SDS的长度小于1MB时，分配（2 * len + 1B）的空间；当SDS的长度大于等于1MB时，分配（len + 1MB + 1B）的空间；
+    + 惰性空间释放：当缩短字符串时，并不会立即使用内存重分配来回收多出来的字符，而是记录在free属性中；
+
+#### 链表
+
+``` C
+/* 
+ * 双端链表节点 
+ */  
+typedef struct listNode {  
+    // 前置节点  
+    struct listNode *prev;  
+    // 后置节点  
+    struct listNode *next;  
+    // 节点的值  
+    void *value;  
+} listNode;  
+
+/* 
+ * 双端链表结构 
+ */  
+typedef struct list {  
+    // 表头节点  
+    listNode *head;  
+    // 表尾节点  
+    listNode *tail;  
+    // 节点值复制函数  
+    void *(*dup)(void *ptr);  
+    // 节点值释放函数  
+    void (*free)(void *ptr);  
+    // 节点值对比函数  
+    int (*match)(void *ptr, void *key);  
+    // 链表所包含的节点数量  
+    unsigned long len;  
+} list; 
+```
+
+#### 字典
+
+```
+/* 
+ * 字典 
+ */  
+typedef struct dict {  
+    // 类型特定函数，Redis为不同用途的字典设置不同的类型特定函数  
+    dictType *type;  
+    // 私有数据，传递给特定类型函数的可选参数  
+    void *privdata;  
+    // 哈希表，一般情况下字典使用ht[0]，ht[1]只会在对ht[0]进行rehash时使用  
+    dictht ht[2];  
+    // rehash 索引  
+    // 当 rehash 不在进行时，值为 -1  
+    int rehashidx; /* rehashing not in progress if rehashidx == -1 */  
+    // 目前正在运行的安全迭代器的数量  
+    int iterators; /* number of iterators currently running */  
+} dict;  
+
+/* 
+ * 哈希表 
+ * 每个字典都使用两个哈希表，从而实现渐进式 rehash 。 
+ */  
+typedef struct dictht {      
+    // 哈希表数组，存放具体的键值对  
+    dictEntry **table;  
+    // 哈希表大小  
+    unsigned long size;      
+    // 哈希表大小掩码，用于计算索引值  
+    // 总是等于 size - 1  
+    unsigned long sizemask;  
+    // 该哈希表已有节点的数量  
+    unsigned long used;  
+} dictht;  
+
+/* 
+ * 哈希表节点 
+ */  
+typedef struct dictEntry {      
+    // 键  
+    void *key;  
+    // 值  
+    union {  
+        void *val;  
+        uint64_t u64;  
+        int64_t s64;  
+    } v;  
+    // 指向下个哈希表节点，形成链表  
+    struct dictEntry *next;  
+} dictEntry;  
+```
+
+#### 跳跃表（skiplist）
+
+``` C
+/* 
+ * 跳跃表 
+ */  
+typedef struct zskiplist {  
+    // 表头节点和表尾节点  
+    struct zskiplistNode *header, *tail;  
+    // 表中节点的数量  
+    unsigned long length;  
+    // 表中层数最大的节点的层数，表头结点的层数不计算在内  
+    int level;  
+} zskiplist;  
+
+/* 
+ * 跳跃表节点 
+ */  
+typedef struct zskiplistNode {  
+    // 成员对象  
+    robj *obj;  
+    // 分值，跳跃表中节点按各自所保存的分值从小到大排列  
+    double score;  
+    // 后退指针，指向当前节点的前一个节点  
+    struct zskiplistNode *backward;  
+    // 层，每次创建一个新节点，程序按幂次定律随机生成一个1~32的值作为level数组的大小（层高度）  
+    struct zskiplistLevel {  
+        // 前进指针  
+        struct zskiplistNode *forward;  
+        // 跨度，前进指针所指向的节点和当前节点的距离  
+        unsigned int span;  
+    } level[];  
+} zskiplistNode;  
+```
+
+#### 整数集合（intset）
+
+```
+typedef struct intset {      
+    // 编码方式  
+    uint32_t encoding;  
+    // 集合包含的元素数量  
+    uint32_t length;  
+    // 保存元素的数组，各项在数组中按值大小有序地排序并且不包含重得项  
+    int8_t contents[];  
+} intset;  
+```
+
+####  压缩列表（ziplist）
+
 
 ### redis优势
 
@@ -320,5 +488,33 @@ string，list，set，sort set，hash等；
 + Redis支持数据的备份，即master-slave模式的数据备份。
 + Redis支持数据的持久化，可以将内存中的数据保持在磁盘中，重启的时候可以再次加载进行使用。
 
+### 持久化
+
++ 内存快照（snapshotting）
+
+每个一段时间进行一次内存快照，把内存中的数据写入二进制文件中（*.rdb）；save，在主进程操作，阻塞主进程，不能快速响应请求；bgsave，fork一个子进程操作，主进程继续处理请求，完成后通知主进程；
+
+缺点：每次都是全部内存数据写入，数据量大会操作频繁，影响性能。
+
++ 日志追加（append only file）
+
+把增加、修改数据的命令通过write函数追加到文件尾部（*.aof）；redis重启时读取所有命令并且执行，从而把数据写入内存；
+
+缺点：日志文件膨胀比较快，如nums自增100次，恢复只需要一次set nums 100，其他命令多余。
+
+优化：bgrewriteaof命令，类似于内存快照方式，把命令保存到临时文件，最后再替换原来的日志文件。
+
+### 主从复制
+
+| master服务器 | slave服务器 |  
+|---|---|
+| | 1.连接（或重新连接）主服务器，发送同步（SYNC）命令 |
+| 2.开始执行bgsave，生成快照文件（.rdb），然后向slave服务器发送，并使用缓冲区记录后续执行的写命令 | |
+| | 3.丢弃所有旧数据，接收并载入master服务器发来的快照文件，解释并处理完毕后，正常接收命令 |
+| 4.继续发送缓冲区记录的后续写命令；发送完毕后，每执行一个新的写命令就再发送一次 | |
+| | 5.接收并执行每一个写命令 |
+
 ## hash算法及数据库实现
+
+> 把任意长度的输入，通过hash算法变成固定长度的输出，输出的值就是hash的值。
 
