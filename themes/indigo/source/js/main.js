@@ -1,3 +1,13 @@
+function setMenuStorage($key) {
+    //localStorage会把所存进的值都转换成字符串类型，直接用bool会有问题
+    $key = $key === true ? "1" : "0";
+    window.localStorage.setItem("g_menu_show", $key);
+}
+
+function getMenuStorage() {
+    return window.localStorage.getItem("g_menu_show");
+}
+
 (function (w, d) {
 
     var body = d.body,
@@ -492,11 +502,13 @@
 
     menuToggle.addEventListener(even, function (e) {
         Blog.toggleMenu(true);
+        setMenuStorage(true);
         e.preventDefault();
     }, false);
 
     menuOff.addEventListener(even, function () {
         menu.classList.add('hide');
+        setMenuStorage(false);
     }, false);
 
     mask.addEventListener(even, function (e) {
@@ -540,4 +552,14 @@
     } else {
         console.error('Waves loading failed.')
     }
+
+    //全局保持左边菜单状态
+    var isShow = getMenuStorage();
+    if (isShow === "1") {
+        Blog.toggleMenu(true);
+    }
+    else {
+        menu.classList.add('hide');
+    }
+
 })(window, document);
