@@ -109,7 +109,6 @@ typedef struct {
 + 单个进程监听的fd数量有限，最多为1024；（能改，但是改后影响效率）；
 + 每次调用select，都需要遍历所有fd，才能发现哪些发生了事件，效率慢；
 + 内存复制开销大，需要从用户空间、内核空间来回拷贝fd_set；
-+ 触发方式是水平触发，应用程序如果没有完成对一个就绪的fd进行IO操作，那么下次select调用还是会将这些fd通知进程；
 
 ### poll
 
@@ -119,10 +118,51 @@ poll的实现和select非常相似，只是描述fd集合的方式不同，poll�
 
 #### 函数
 
-```C++
+```c++
 # include <poll.h>
-int poll ( struct pollfd * fds, unsigned int nfds, int timeout);
+int poll(struct pollfd * fds, unsigned int nfds, int timeout);
+
+//结构
+truct pollfd {
+    int fd;//文件描述符
+    short events;//等待的事件
+    short revents;//实际发生了的事件
+}; 
 ```
 
 ### epoll
 
+#### 函数
+
+```c++
+//创建epoll句柄，返回值为句柄，即epfd
+int epoll_create(int size)；
+
+//注册要监听的事件类型
+int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)；
+
+//等待事件的发生
+int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout)；
+```
+
+#### 解决select、poll的缺点
+
++ epoll_create，提前准备好相关资源（开辟内核缓冲区，创建红黑树和就绪链表），注册事件只是往里面添加新的fd，所支持的fd上限是最大可以打开文件的数目；
++ epoll_ctl，注册事件时，就会把fd拷贝进内核，保证每个fd只拷贝一次；
++ epoll_ctl，注册事件时，为每个fd指定一个回调函数，当设备就绪，唤醒队列上的等待者时，就会调用回调函数，把就绪的fd加入一个就绪链表；
++ epoll_wait，等待事件的发生，只需要查看就绪链表中有没有就绪的fd，并且返回的fd是通过mmap让内核和用户空间共享同一块内存实现传递的，减少了不必要的拷贝；
+
+#### 工作模式
+
++ LT模式（level trigger，默认模式）：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序可以不立即处理该事件。下次调用epoll_wait时，会再次响应应用程序并通知此事件；
++ ET模式（edge trigger）：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序必须立即处理该事件。如果不处理，下次调用epoll_wait时，不会再次响应应用程序并通知此事件。
+
+ET模式在很大程度上减少了epoll事件被重复触发的次数，因此效率要比LT模式高。epoll工作在ET模式的时候，必须使用非阻塞套接口，以避免由于一个文件句柄的阻塞读/阻塞写操作把处理多个文件描述符的任务饿死。
+
+
+#### 总结
+
+epoll比select和poll高效的原因主要有：
+
++ 减少了用户态和内核态之间的fd拷贝； 
++ 减少了对就绪fd的遍历；
