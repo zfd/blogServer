@@ -1,7 +1,7 @@
 ---
 title: nginx高并发原理
 date: 2018-02-03 15:11:53
-categories: 服务端
+categories: 服务器
 tags: [server, nginx, epoll]
 ---
 

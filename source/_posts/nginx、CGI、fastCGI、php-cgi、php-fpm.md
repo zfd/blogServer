@@ -1,19 +1,30 @@
 ---
 title: nginx、CGI、fastCGI、php-cgi、php-fpm
 date: 2018-02-07 17:12:45
-categories: 服务端
+categories: 服务器
 tags: [nginx, CGI, fastCGI, php-fpm]
 ---
 
 ## 名词解释
 
-
 + `nginx`：web server，内容分发者，只能处理静态文件，动态脚本只能交给php自己处理。
 + `CGI`：通用网关接口（common gateway interface），是 Web Server 与 Web Application 之间数据交换的一种协议。
 + `FastCGI`：同 CGI，是一种通信协议，但比 CGI 在效率上做了一些优化。同样，SCGI 协议与 FastCGI 类似。
-+ `PHP-CGI`：是 PHP（Web Application）对 Web Server 提供的 CGI协议的接口程序。
-+ `PHP-FPM`：是 PHP（Web Application）对 Web Server 提供的 FastCGI 协议的接口程序，额外还提供了相对智能一些任务管理。
++ `PHP-CGI`：是 PHP（Web Application）对 Web Server 提供的 FastCGI 协议的接口程序。
++ `PHP-FPM`：PHP-CGI 的改进版，它直接管理多个 PHP-CGI 进程。
 
+## fastCGI
+
+fastCGI可以理解为一个常驻型的cgi，其主要行为是将CGI解释器进程保持在内存中，并因此获得较高的性能。
+
+### 作用
+
++ 解决cgi并发重复fork的问题；
++ 支持分布式运算；
+
+## php-fpm
+
+就是 php-cgi 的进程管理器，修改php.ini后，可以重新fork php-cgi进程，实现平滑重启。
 
 ## nginx，php-fpm工作流程
 
@@ -30,10 +41,7 @@ tags: [nginx, CGI, fastCGI, php-fpm]
 加载nginx的fast-cgi模块
         |
         |
-fast-cgi监听127.0.0.1:9000地址
-        |
-        |
-www.example.com/index.php请求到达127.0.0.1:9000
+www.example.com/index.php请求到达127.0.0.1:9000（fast-cgi协议）
         |
         |
 php-fpm 监听127.0.0.1:9000

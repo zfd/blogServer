@@ -1,7 +1,7 @@
 ---
 title: select、poll、epoll
 date: 2018-03-30 14:39:42
-categories: 服务端
+categories: 服务器
 tags: [select, poll, epoll]
 ---
 

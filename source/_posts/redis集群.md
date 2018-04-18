@@ -1,7 +1,7 @@
 ---
 title: redis集群
 date: 2018-04-17 13:33:16
-categories: [服务端]
+categories: [服务器]
 tags: [redis]
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: memcached、redis比较
 date: 2018-03-19 17:03:13
-categories: [服务端]
+categories: [服务器]
 tags: [nosql, memcached, redis]
 ---
 
