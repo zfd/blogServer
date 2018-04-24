@@ -26,6 +26,29 @@ fastCGI可以理解为一个常驻型的cgi，其主要行为是将CGI解释器�
 
 就是 php-cgi 的进程管理器，修改php.ini后，可以重新fork php-cgi进程，实现平滑重启。
 
+### 运行模式
+
++ static：静态分配，启动时分配固定的worker进程；
++ ondemand：按需分配，当收到用户请求时fork worker进程；
++ dynamic：动态分配，启动时分配固定进程，用户请求增加，按照设定范围浮动；
+
+### 运行原理
+
+一个master进程，管理多个worker进程；
+
+master进程：
+
+1. 初始化cgi；
+1. 初始化php环境；
+1. 初始化php-fpm；
+1. 运行，主进程fork子进程，主进程阻塞，事件循环；
+
+worker进程：
+
+1. 接收请求；
+1. 处理请求；
+1. 返回请求结果；
+
 ## nginx，php-fpm工作流程
 
 ```
