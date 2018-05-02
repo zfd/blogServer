@@ -23,12 +23,21 @@ tags: [http, https]
 
 ### 三次握手
 
-> SYN：synchronize sequence numbers，同步序列编号
-> ACK：同步请求应答
+> SYN：同步序列号标志位，seq：序列号
+> ACK：确认序列号标志位，ack：确认号
 
-+ 建立连接时，客户端设置SYN标志位为1，发送序列号seq=j，进入syn_send状态，等待服务器确认；
-+ 服务器收到后，设置ACK标志位为1，确认号为ack=j+1，设置SYN标志位为1，序列号为syn=k，发送后进入syn_recv状态；
-+ 客户端收到包，设置ACK标志位为1，确认号为ack=k+1，发送后进入已建立状态，完成三次握手；
+1. client->server，SYN=1，seq=j，client进入syn_sent状态；
+1. server->client，ACK=1，ack=j+1，SYN=1，seq=k，server进入syn_recv状态；
+1. client->server，ACK=1，ack=k+1，成功建立连接。
+
+### 四次挥手
+
+> 双工通信，断开时，2边都要发送FIN，因为第一次FIN只表示一边断开，另一边可能还在发送数据。
+
+1. client->server，FIN=1，seq=m，client进入fin_wait状态；
+1. server->client，ACK=1，ack=m+1，server进入close_wait状态；
+1. server->client，FIN=1，seq=n，server进入last_ack状态，client进入time_wait状态；
+1. client->server，ACK=1，ack=n+1，完成4次挥手。
 
 ## http
 
