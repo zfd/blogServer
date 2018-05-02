@@ -1,7 +1,7 @@
 ---
 title: grep命令
 date: 2018-03-01 14:10:38
-categories: linux命令
+categories: linux
 tags: [linux, grep]
 ---
 

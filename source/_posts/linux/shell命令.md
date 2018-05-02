@@ -1,7 +1,7 @@
 ---
 title: shell命令
 date: 2018-03-01 14:15:20
-categories: linux命令
+categories: linux
 tags: [linux, shell]
 ---
 
