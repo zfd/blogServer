@@ -54,6 +54,8 @@ commit; // rollback;
 只锁住特定行的数据，并发能力强。
 
 ```
+//2种一致性锁定读操
+
 //共享锁
 select * from table where ? lock in share mode;
 
@@ -79,21 +81,26 @@ select * from table where ? for update;
 
 脏读：事务A读到事务B未提交的数据；
 
-处理：事务B对select加排他锁（for update），使数据不可被其他事务读。
+解决：
+
++ 事务级别，已提交读以上，都只会读取已提交数据；
++ 未提交读级别下，可以用select加排它锁，防止其他事务读；
 
 ### 避免不可重复读
 
 不可重复读：事务中多次查询数据的值不一致。
 
-处理：可以用mvcc解决，更新时数据版本号跟查询时不一致则回滚事务。
+处理：
 
-（可重复读、可串行化，隔离级别下，是快照读，本身就不存在这个问题）
++ 可重复读之下，使用mvcc解决，读取一个快照数据；
++ 已提交读之上，可以对select加共享锁，防止其他事务写；
 
 ### 避免幻读
 
 使用next-key锁（间隙锁+行锁），innodb自动加。
 
 用法：(隔离级别：可重复读)
+
 ```
 begin;
 select * from xxx where id between 10 and 15 lock in share mode;//for update
