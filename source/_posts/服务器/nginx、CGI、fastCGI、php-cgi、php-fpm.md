@@ -10,8 +10,8 @@ tags: [nginx, CGI, fastCGI, php-fpm]
 + `nginx`：web server，内容分发者，只能处理静态文件，动态脚本只能交给php自己处理。
 + `CGI`：通用网关接口（common gateway interface），是 Web Server 与 Web Application 之间数据交换的一种协议。
 + `FastCGI`：同 CGI，是一种通信协议，但比 CGI 在效率上做了一些优化。同样，SCGI 协议与 FastCGI 类似。
-+ `PHP-CGI`：是 PHP（Web Application）对 Web Server 提供的 FastCGI 协议的接口程序。
-+ `PHP-FPM`：PHP-CGI 的改进版，它直接管理多个 PHP-CGI 进程。
++ `PHP-CGI`：是 PHP（Web Application）对 Web Server 提供的 CGI 协议的接口程序。
++ `PHP-FPM`：是 PHP（Web Application）对 Web Server 提供的 FastCGI 协议的接口程序，它直接管理多个 PHP-CGI 进程。
 
 ## fastCGI
 
